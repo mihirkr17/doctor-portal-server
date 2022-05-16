@@ -53,7 +53,7 @@ function sendAppointmentEmail(booking) {
         <p>Looking forward to seeing you on ${date} at ${slot}.</p>
         
         <h3>Our Address</h3>
-        <p>Andor Killa Bandorban</p>
+        <p>Lalmonirhat, Rangpur</p>
         <p>Bangladesh</p>
         <a href="https://web.programming-hero.com/">unsubscribe</a>
       </div>
