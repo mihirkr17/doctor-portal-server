@@ -1,4 +1,5 @@
 const express = require('express');
+const request = require('request');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -30,44 +31,80 @@ function verifyJWT(req, res, next) {
   });
 }
 
-const emailSenderOptions = {
-  auth: {
-    api_key: process.env.EMAIL_SENDER_KEY
-  }
-}
 
-const emailClient = nodemailer.createTransport(emailSenderOptions);
+// const emailClient = nodemailer.createTransport(emailSenderOptions);
 
 function sendAppointmentEmail(booking) {
   const { patient, patientName, treatment, date, slot } = booking;
 
-  var email = {
-    from: process.env.EMAIL_SENDER,
-    to: patient,
-    subject: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
-    text: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
-    html: `
-      <div>
-        <p> Hello ${patientName}, </p>
-        <h3>Your Appointment for ${treatment} is confirmed</h3>
-        <p>Looking forward to seeing you on ${date} at ${slot}.</p>
-        
-        <h3>Our Address</h3>
-        <p>Lalmonirhat, Rangpur</p>
-        <p>Bangladesh</p>
-        <a href="https://web.programming-hero.com/">unsubscribe</a>
-      </div>
-    `
+  const data = {
+    members: [
+      {
+        email_address: patient,
+        status: 'subscribed',
+        merge_fields: {
+          FNAME: patientName,
+          SUBJECT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+          TEXT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+          HTML: `
+          <div>
+            <p> Hello ${patientName}, </p>
+            <h3>Your Appointment for ${treatment} is confirmed</h3>
+            <p>Looking forward to seeing you on ${date} at ${slot}.</p>
+            
+            <h3>Our Address</h3>
+            <p>Lalmonirhat, Rangpur</p>
+            <p>Bangladesh</p>
+            <a href="https://web.programming-hero.com/">unsubscribe</a>
+          </div>
+        `
+        }
+      }
+    ]
   };
 
-  emailClient.sendMail(email, function (err, info) {
-    if (err) {
-      console.log(err);
-    }
-    else {
-      console.log('Message sent: ', info);
-    }
-  });
+  const postData = JSON.stringify(data);
+
+  fetch('https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec', {
+    method: 'POST',
+    headers: {
+      Authorization: `auth ${process.env.EMAIL_SENDER_KEY}`
+    },
+    body: postData
+  })
+    .then(res.statusCode === 200 ?
+      console.log("message sent") : console.log('message not sent'))
+      // res.redirect('/success.html') :
+      // res.redirect('/fail.html'))
+    .catch(err => console.log(err))
+
+  // var email = {
+  //   from: process.env.EMAIL_SENDER,
+  //   to: patient,
+  //   subject: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+  //   text: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+  //   html: `
+  //     <div>
+  //       <p> Hello ${patientName}, </p>
+  //       <h3>Your Appointment for ${treatment} is confirmed</h3>
+  //       <p>Looking forward to seeing you on ${date} at ${slot}.</p>
+
+  //       <h3>Our Address</h3>
+  //       <p>Lalmonirhat, Rangpur</p>
+  //       <p>Bangladesh</p>
+  //       <a href="https://web.programming-hero.com/">unsubscribe</a>
+  //     </div>
+  //   `
+  // };
+
+  // emailClient.sendMail(email, function (err, info) {
+  //   if (err) {
+  //     console.log(err);
+  //   }
+  //   else {
+  //     console.log('Message sent: ', info);
+  //   }
+  // });
 
 }
 
@@ -160,7 +197,7 @@ async function run() {
 
       res.send(services);
     })
-    
+
     app.get('/booking', verifyJWT, async (req, res) => {
       const patient = req.query.patient;
       const decodedEmail = req.decoded.email;
