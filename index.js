@@ -36,7 +36,7 @@ const emailSenderOptions = {
   }
 }
 
-const emailClient = nodemailer.createTransport(sgTransport(emailSenderOptions));
+const emailClient = nodemailer.createTransport(emailSenderOptions);
 
 function sendAppointmentEmail(booking) {
   const { patient, patientName, treatment, date, slot } = booking;
