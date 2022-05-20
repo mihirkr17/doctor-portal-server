@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // Bodyparser Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PWD}@cluster0.tfysy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -70,16 +70,37 @@ function sendAppointmentEmail(booking) {
 
   const postData = JSON.stringify(data);
 
-  fetch('https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec', {
+  const options = {
+    url: 'https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec',
     method: 'POST',
     headers: {
       Authorization: `auth ${process.env.EMAIL_SENDER_KEY}`
     },
     body: postData
-  })
-    .then(res.statusCode === 200 ?
-      console.log("message sent") : console.log('message not sent'))
-    .catch(err => console.log(err))
+  }
+
+  request(options, (err, res, body) => {
+    if (err) {
+      console.log("Mail not sent");
+    } else {
+      if (res.statusCode === 200) {
+        console.log("Email send");
+      } else {
+        console.log("Mail not sent");
+      }
+    }
+  });
+
+  // fetch('https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec', {
+  //   method: 'POST',
+  //   headers: {
+  //     Authorization: `auth ${process.env.EMAIL_SENDER_KEY}`
+  //   },
+  //   body: postData
+  // })
+  //   .then(res.statusCode === 200 ?
+  //     console.log("message sent") : console.log('message not sent'))
+  //   .catch(err => console.log(err))
 }
 
 
