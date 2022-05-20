@@ -38,18 +38,18 @@ function verifyJWT(req, res, next) {
 
 
 // const emailClient = nodemailer.createTransport(emailSenderOptions);
+var transport = nodemailer.createTransport({
+  host: "smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: process.env.EMAIL_SENDER,
+    pass: process.env.EMAIL_SENDER_PWD
+  }
+});
 
 function sendAppointmentEmail(booking) {
   const { patient, patientName, treatment, date, slot } = booking;
-
-  var transport = nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-      user: "23e8f6e1144b6f",
-      pass: "b7c551d3d505f4"
-    }
-  });
+ 
 
   var email = {
     from: process.env.EMAIL_SENDER,
