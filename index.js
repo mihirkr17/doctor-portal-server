@@ -1,10 +1,10 @@
 const express = require('express');
-const request = require('request');
+// const request = require('request');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-// var nodemailer = require('nodemailer');
+var nodemailer = require('nodemailer');
 // var sgTransport = require('nodemailer-sendgrid-transport');
 const bodyParser = require('body-parser');
 // const fetch = require('node-fetch');
@@ -42,6 +42,44 @@ function verifyJWT(req, res, next) {
 function sendAppointmentEmail(booking) {
   const { patient, patientName, treatment, date, slot } = booking;
 
+  var transport = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+      user: "23e8f6e1144b6f",
+      pass: "b7c551d3d505f4"
+    }
+  });
+
+  var email = {
+    from: process.env.EMAIL_SENDER,
+    to: patient,
+    subject: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+    text: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+    html: `
+      <div>
+        <p> Hello ${patientName}, </p>
+        <h3>Your Appointment for ${treatment} is confirmed</h3>
+        <p>Looking forward to seeing you on ${date} at ${slot}.</p>
+        
+        <h3>Our Address</h3>
+        <p>Andor Killa Bandorban</p>
+        <p>Bangladesh</p>
+        <a href="https://web.programming-hero.com/">unsubscribe</a>
+      </div>
+    `
+  };
+
+  transport.sendMail(email, function (err, info) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      console.log('Message sent: ', info);
+    }
+  });
+
+
   // const data = {
   //   members: [
   //     {
@@ -68,47 +106,47 @@ function sendAppointmentEmail(booking) {
   //   ]
   // };
 
-  const data = {
-    members: [
-      {
-        email_address: patient,
-        status: 'subscribed',
-        merge_fields: {
-          DNAME: patientName,
-          SUBJECT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
-          TEXT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
-          HTML: `
-             Hello ${patientName},
-            Your Appointment for ${treatment} is confirmed
-            Looking forward to seeing you on ${date} at ${slot}.
-        `
-        }
-      }
-    ]
-  };
+  // const data = {
+  //   members: [
+  //     {
+  //       email_address: patient,
+  //       status: 'subscribed',
+  //       merge_fields: {
+  //         DNAME: patientName,
+  //         SUBJECT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+  //         TEXT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+  //         HTML: `
+  //            Hello ${patientName},
+  //           Your Appointment for ${treatment} is confirmed
+  //           Looking forward to seeing you on ${date} at ${slot}.
+  //       `
+  //       }
+  //     }
+  //   ]
+  // };
 
-  const postData = JSON.stringify(data);
+  // const postData = JSON.stringify(data);
 
-  const options = {
-    url: 'https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec',
-    method: 'POST',
-    headers: {
-      Authorization: `auth ${process.env.EMAIL_SENDER_KEY}`
-    },
-    body: postData
-  }
+  // const options = {
+  //   url: 'https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec',
+  //   method: 'POST',
+  //   headers: {
+  //     Authorization: `auth ${process.env.EMAIL_SENDER_KEY}`
+  //   },
+  //   body: postData
+  // }
 
-  request(options, (err, res, body) => {
-    if (err) {
-      console.log("Mail not sent");
-    } else {
-      if (res.statusCode === 200) {
-        console.log("Email send");
-      } else {
-        console.log("Mail not sent");
-      }
-    }
-  });
+  // request(options, (err, res, body) => {
+  //   if (err) {
+  //     console.log("Mail not sent");
+  //   } else {
+  //     if (res.statusCode === 200) {
+  //       console.log("Email send");
+  //     } else {
+  //       console.log("Mail not sent");
+  //     }
+  //   }
+  // });
 }
 
 
