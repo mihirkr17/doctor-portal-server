@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // Bodyparser Middleware
-// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PWD}@cluster0.tfysy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -74,7 +74,7 @@ function sendAppointmentEmail(booking) {
         email_address: patient,
         status: 'subscribed',
         merge_fields: {
-          FNAME: patientName,
+          DNAME: patientName,
           SUBJECT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
           TEXT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
           HTML: `
