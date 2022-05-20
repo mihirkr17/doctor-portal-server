@@ -4,14 +4,19 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-var nodemailer = require('nodemailer');
-var sgTransport = require('nodemailer-sendgrid-transport');
+// var nodemailer = require('nodemailer');
+// var sgTransport = require('nodemailer-sendgrid-transport');
+const bodyParser = require('body-parser');
+const fetch = require('node-fetch');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Bodyparser Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PWD}@cluster0.tfysy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -74,38 +79,7 @@ function sendAppointmentEmail(booking) {
   })
     .then(res.statusCode === 200 ?
       console.log("message sent") : console.log('message not sent'))
-      // res.redirect('/success.html') :
-      // res.redirect('/fail.html'))
     .catch(err => console.log(err))
-
-  // var email = {
-  //   from: process.env.EMAIL_SENDER,
-  //   to: patient,
-  //   subject: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
-  //   text: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
-  //   html: `
-  //     <div>
-  //       <p> Hello ${patientName}, </p>
-  //       <h3>Your Appointment for ${treatment} is confirmed</h3>
-  //       <p>Looking forward to seeing you on ${date} at ${slot}.</p>
-
-  //       <h3>Our Address</h3>
-  //       <p>Lalmonirhat, Rangpur</p>
-  //       <p>Bangladesh</p>
-  //       <a href="https://web.programming-hero.com/">unsubscribe</a>
-  //     </div>
-  //   `
-  // };
-
-  // emailClient.sendMail(email, function (err, info) {
-  //   if (err) {
-  //     console.log(err);
-  //   }
-  //   else {
-  //     console.log('Message sent: ', info);
-  //   }
-  // });
-
 }
 
 
