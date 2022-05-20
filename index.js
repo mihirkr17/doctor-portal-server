@@ -39,69 +39,58 @@ function verifyJWT(req, res, next) {
 
 // const emailClient = nodemailer.createTransport(emailSenderOptions);
 
-function sendAppointmentEmail(booking) {
-  const { patient, patientName, treatment, date, slot } = booking;
+// function sendAppointmentEmail(booking) {
+//   const { patient, patientName, treatment, date, slot } = booking;
 
-  const data = {
-    members: [
-      {
-        email_address: patient,
-        status: 'subscribed',
-        merge_fields: {
-          FNAME: patientName,
-          SUBJECT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
-          TEXT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
-          HTML: `
-          <div>
-            <p> Hello ${patientName}, </p>
-            <h3>Your Appointment for ${treatment} is confirmed</h3>
-            <p>Looking forward to seeing you on ${date} at ${slot}.</p>
-            
-            <h3>Our Address</h3>
-            <p>Lalmonirhat, Rangpur</p>
-            <p>Bangladesh</p>
-            <a href="https://web.programming-hero.com/">unsubscribe</a>
-          </div>
-        `
-        }
-      }
-    ]
-  };
+//   const data = {
+//     members: [
+//       {
+//         email_address: patient,
+//         status: 'subscribed',
+//         merge_fields: {
+//           FNAME: patientName,
+//           SUBJECT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+//           TEXT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+//           HTML: `
+//           <div>
+//             <p> Hello ${patientName}, </p>
+//             <h3>Your Appointment for ${treatment} is confirmed</h3>
+//             <p>Looking forward to seeing you on ${date} at ${slot}.</p>
 
-  const postData = JSON.stringify(data);
+//             <h3>Our Address</h3>
+//             <p>Lalmonirhat, Rangpur</p>
+//             <p>Bangladesh</p>
+//             <a href="https://web.programming-hero.com/">unsubscribe</a>
+//           </div>
+//         `
+//         }
+//       }
+//     ]
+//   };
 
-  const options = {
-    url: 'https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec',
-    method: 'POST',
-    headers: {
-      Authorization: `auth ${process.env.EMAIL_SENDER_KEY}`
-    },
-    body: postData
-  }
+//   const postData = JSON.stringify(data);
 
-  request(options, (err, res, body) => {
-    if (err) {
-      console.log("Mail not sent");
-    } else {
-      if (res.statusCode === 200) {
-        console.log("Email send");
-      } else {
-        console.log("Mail not sent");
-      }
-    }
-  });
+//   const options = {
+//     url: 'https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec',
+//     method: 'POST',
+//     headers: {
+//       Authorization: `auth ${process.env.EMAIL_SENDER_KEY}`
+//     },
+//     body: postData
+//   }
 
-  // fetch('https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec', {
-  //   method: 'POST',
-  //   headers: {
-  //     Authorization: `auth ${process.env.EMAIL_SENDER_KEY}`
-  //   },
-  //   body: postData
-  // })
-  //   .then(res.statusCode === 200 ?
-  //     console.log("message sent") : console.log('message not sent'))
-  //   .catch(err => console.log(err))
-}
+//   request(options, (err, res, body) => {
+//     if (err) {
+//       console.log("Mail not sent");
+//     } else {
+//       if (res.statusCode === 200) {
+//         console.log("Email send");
+//       } else {
+//         console.log("Mail not sent");
+//       }
+//     }
+//   });
+// }
 
 
 async function run() {
@@ -223,6 +212,59 @@ async function run() {
       const result = await bookingCollection.insertOne(booking);
       console.log('sending email');
       sendAppointmentEmail(booking);
+
+      const { patient, patientName, treatment, date, slot } = booking;
+
+      const data = {
+        members: [
+          {
+            email_address: patient,
+            status: 'subscribed',
+            merge_fields: {
+              FNAME: patientName,
+              SUBJECT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+              TEXT: `Your Appointment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+              HTML: `
+          <div>
+            <p> Hello ${patientName}, </p>
+            <h3>Your Appointment for ${treatment} is confirmed</h3>
+            <p>Looking forward to seeing you on ${date} at ${slot}.</p>
+            
+            <h3>Our Address</h3>
+            <p>Lalmonirhat, Rangpur</p>
+            <p>Bangladesh</p>
+            <a href="https://web.programming-hero.com/">unsubscribe</a>
+          </div>
+        `
+            }
+          }
+        ]
+      };
+
+      const postData = JSON.stringify(data);
+
+      const options = {
+        url: 'https://us14.api.mailchimp.com/3.0/lists/0c0c99a9ec',
+        method: 'POST',
+        headers: {
+          Authorization: `auth ${process.env.EMAIL_SENDER_KEY}`
+        },
+        body: postData
+      }
+
+      request(options, (err, resf, body) => {
+        if (err) {
+          console.log("Mail not sent");
+        } else {
+          if (resf.statusCode === 200) {
+            console.log("Email send");
+          } else {
+            console.log("Mail not sent");
+          }
+        }
+      });
+
+
       return res.send({ success: true, result });
     });
 
