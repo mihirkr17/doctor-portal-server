@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 // var nodemailer = require('nodemailer');
 // var sgTransport = require('nodemailer-sendgrid-transport');
 const bodyParser = require('body-parser');
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -56,7 +56,7 @@ function sendAppointmentEmail(booking) {
   //           <p> Hello ${patientName}, </p>
   //           <h3>Your Appointment for ${treatment} is confirmed</h3>
   //           <p>Looking forward to seeing you on ${date} at ${slot}.</p>
-            
+
   //           <h3>Our Address</h3>
   //           <p>Lalmonirhat, Rangpur</p>
   //           <p>Bangladesh</p>
